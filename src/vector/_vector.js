@@ -149,14 +149,6 @@ function addAngle (vec, ang, piv) {
 
   // translate point back:
   vecR = vector.add([xnew, ynew], piv)
-
-  /*
-  let l = mag(vec)
-  let newAngle = angle(vec) + ang
-  let vecR = []
-  vecR[0] = l * Math.cos(newAngle)
-  vecR[1] = l * Math.sin(newAngle)
-  */
   return vecR
 }
 

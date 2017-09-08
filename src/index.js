@@ -1,24 +1,28 @@
 import Vector from './vector/Vector'
+import vec from './vector/_vector'
 import render from './render'
 import Color from './Color'
 import number from './number'
+import physics from './physics/main.js'
 import initEvents from './events'
 
-const lienzo = {
-  Vector,
-  render,
-  number,
-  Color
+function makeGlobal (window) {
+  window.physics = physics
+  window.vec = vec
+  window.Vector = Vector
+  window.Color = Color
+  window.render = render
+  window.number = number
+  initEvents(window)
 }
 
-initEvents()
-
-// window.events = events
-window.Vector = Vector
-window.Color = Color
-window.render = render
-window.number = number
-
-window.lienzo = lienzo
-
-export default lienzo
+export {
+  Vector,
+  render,
+  physics,
+  number,
+  Color,
+  vec,
+  makeGlobal,
+  initEvents
+}

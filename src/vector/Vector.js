@@ -13,6 +13,14 @@ class Vector {
     return this.value[1]
   }
 
+  set x (value) {
+    this.value[0] = value
+  }
+
+  set y (value) {
+    this.value[1] = value
+  }
+
   add (vec) {
     this.value = vector.add(this.value, vec.value)
   }
@@ -50,7 +58,7 @@ class Vector {
   }
 
   copy () {
-    return vector.copy(this.value)
+    return new Vector(vector.copy(this.value))
   }
 
   setMag (magnitud) {

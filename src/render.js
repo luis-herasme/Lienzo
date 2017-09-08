@@ -1,3 +1,5 @@
+/* global Image */
+
 const render = {
   init,
   setCenter,
@@ -12,18 +14,42 @@ const render = {
   text,
   width: 0,
   height: 0,
-  scale: {setScale, scale: 1},
+  setScale,
+  scale: 1,
+  loadImage,
+  image,
   context: undefined
 }
 
-function init () {
-  const canvas = document.createElement('canvas')
-  document.body.appendChild(canvas)
-  render.width = window.innerWidth / render.scale.scale
-  render.height = window.innerHeight / render.scale.scale
+let images = {}
+let canvas
+
+function init (canvasName, width, height) {
+  if (canvasName) {
+    canvas = document.getElementById(canvasName)
+    if (width && height) {
+      canvas.width = width
+      canvas.height = height
+    } else {
+      canvas.width = window.innerWidth
+      canvas.height = window.innerHeight
+    }
+  } else {
+    canvas = document.createElement('canvas')
+    document.body.appendChild(canvas)
+
+    if (width && height) {
+      canvas.width = width
+      canvas.height = height
+    } else {
+      canvas.width = window.innerWidth
+      canvas.height = window.innerHeight
+    }
+  }
+  render.width = canvas.width / render.scale
+  render.height = canvas.height / render.scale
+
   render.center = [render.width / 2, render.height / 2]
-  canvas.width = window.innerWidth
-  canvas.height = window.innerHeight
   render.context = canvas.getContext('2d')
 }
 
@@ -31,43 +57,36 @@ function setScale (scale) {
   render.width = render.width / scale
   render.height = render.height / scale
   render.center = [render.width / 2, render.height / 2]
-  render.scale.scale = scale
+  render.scale = scale
 }
 
-function line (vec1, vec2, style, dash) {
+function line (vec1, vec2, style, stroke) {
   // Takes a vector as an start point and another vector as the final point of the line
   render.context.beginPath()
-
   setStyle(style)
-
-  if (dash) render.context.setLineDash(dash)
-
-  render.context.moveTo(vec1[0] * render.scale.scale, vec1[1] * render.scale.scale)
-  render.context.lineTo(vec2[0] * render.scale.scale, vec2[1] * render.scale.scale)
-
-  render.context.stroke()
+  render.context.moveTo(vec1[0] * render.scale, vec1[1] * render.scale)
+  render.context.lineTo(vec2[0] * render.scale, vec2[1] * render.scale)
+  if (stroke) render.context.stroke()
   render.context.fill()
-
-  render.context.setLineDash([0, 0])
 }
 
 function rect (x, y, w, h, color) {
   // Draws a rect in the screen
-  x = x * render.scale.scale
-  y = y * render.scale.scale
-  h = h * render.scale.scale
-  w = w * render.scale.scale
   render.context.beginPath()
+  x *= render.scale
+  y *= render.scale
+  h *= render.scale
+  w *= render.scale
   render.context.fillStyle = color
   render.context.fillRect(x, y, w, h)
 }
 
 function strokeRect (x, y, w, h, color) {
   // Draws the borders of a rect in the screen
-  x = x * render.scale.scale
-  y = y * render.scale.scale
-  h = h * render.scale.scale
-  w = w * render.scale.scale
+  x *= render.scale
+  y *= render.scale
+  h *= render.scale
+  w *= render.scale
   render.context.beginPath()
   render.context.fillStyle = color
   render.context.rect(x, y, w, h)
@@ -76,20 +95,20 @@ function strokeRect (x, y, w, h, color) {
 
 function circle (pos, size, color) {
   // Draws a circle in the screen
-  size = size * render.scale.scale
   render.context.beginPath()
+  size = size * render.scale
   render.context.fillStyle = color
-  render.context.arc(pos[0] * render.scale.scale, pos[1] * render.scale.scale, size, 0, 2 * Math.PI)
+  render.context.arc(pos[0] * render.scale, pos[1] * render.scale, size, 0, 2 * Math.PI)
   render.context.fill()
 }
 
 function strokeArc (x, y, size, width, eAngl, aAngl, color) {
   // Draws the borders of an arc in the screen
-  x = x * render.scale.scale
-  y = y * render.scale.scale
-  size = size * render.scale.scale
-  render.context.strokeStyle = color
   render.context.beginPath()
+  x *= render.scale
+  y *= render.scale
+  size = size * render.scale
+  render.context.strokeStyle = color
   render.context.arc(x, y, size, eAngl, aAngl, true)
   render.context.lineWidth = width
   render.context.stroke()
@@ -97,10 +116,10 @@ function strokeArc (x, y, size, width, eAngl, aAngl, color) {
 
 function strokeCircle (pos, size, width, color) {
   // Draws the borders of a circle in the screen
-  size = size * render.scale.scale
-  render.context.strokeStyle = color
   render.context.beginPath()
-  render.context.arc(pos[0] * render.scale.scale, pos[1] * render.scale.scale, size, size, 0, 2 * Math.PI)
+  size = size * render.scale
+  render.context.strokeStyle = color
+  render.context.arc(pos[0] * render.scale, pos[1] * render.scale, size, size, 0, 2 * Math.PI)
   render.context.lineWidth = width
   render.context.stroke()
 }
@@ -111,7 +130,7 @@ function setStyle (style) {
   }
 }
 
-function setCenter (vec = [render.width / 2, render.height / 2]) {
+function setCenter (vec = render.center) {
   // Sets the center of the screen in the given position by a 2D vector
   render.context.translate(vec[0], vec[1])
 }
@@ -119,20 +138,35 @@ function setCenter (vec = [render.width / 2, render.height / 2]) {
 function text (texto, pos, style, stroke) {
   // Puts text in the screen
   setStyle(style)
-  if (stroke) render.context.strokeText(texto, pos[0] * render.scale.scale, pos[1] * render.scale.scale)
-  render.context.fillText(texto, pos[0] * render.scale.scale, pos[1] * render.scale.scale)
+  if (stroke) render.context.strokeText(texto, pos[0] * render.scale, pos[1] * render.scale)
+  render.context.fillText(texto, pos[0] * render.scale, pos[1] * render.scale)
+}
+
+function loadImage (name, src) {
+  const image = new Image()
+  image.src = src
+  images[name] = image
+}
+
+function image (name, x, y, w, h) {
+  render.context.beginPath()
+  x *= render.scale
+  y *= render.scale
+  h *= render.scale
+  w *= render.scale
+  render.context.drawImage(images[name], x, y, w, h)
 }
 
 function clear (color = '#000') {
   // Clears the entire screen
-  if (color) render.context.fillStyle = color
+  render.context.fillStyle = color
   render.context.save()
   render.context.setTransform(1, 0, 0, 1, 0, 0)
-  render.context.fillRect(0, 0, window.innerWidth, window.innerHeight)
+  render.context.fillRect(0, 0, canvas.width, canvas.height)
   render.context.restore()
 }
 
-function poligon (vecs, color) {
+function poligon (vecs, color, stroke) {
   // Draws a poligon in the screen
   render.context.beginPath()
   render.context.fillStyle = color
@@ -142,7 +176,7 @@ function poligon (vecs, color) {
   }
   render.context.closePath()
   render.context.fill()
-  render.context.stroke()
+  if (stroke) render.context.stroke()
 }
 
 export default render

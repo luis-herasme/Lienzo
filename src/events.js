@@ -1,24 +1,36 @@
 
-function init () {
+/* global window */
+
+let mouse = {
+  position: [0, 0],
+  click: 0
+}
+
+let time = 0
+
+function init (window) {
   window.onload = function () {
     window.addEventListener('mousemove', function (e) {
-      if (window.mouseMove) window.mouseMove([e.clientX, e.clientY])
+      mouse.position = [e.clientX, e.clientY]
+      if (window.mouseMove) window.mouseMove(mouse)
     })
 
     window.addEventListener('mousedown', function (e) {
-      if (window.mouseDown) window.mouseDown(e)
+      mouse.click = e.which
+      if (window.mouseDown) window.mouseDown(mouse)
     })
 
     window.addEventListener('mouseup', function (e) {
-      if (window.mouseUp) window.mouseUp(e)
+      mouse.click = 0
+      if (window.mouseUp) window.mouseUp(mouse)
     })
 
     window.addEventListener('keydown', function (e) {
-      if (window.keyDown) window.keydown(e.key)
+      if (window.keyDown) window.keyDown(e.key)
     })
 
     window.addEventListener('keyup', function (e) {
-      if (window.keyUp) window.keyup(e.key)
+      if (window.keyUp) window.keyUp(e.key)
     })
 
     window.addEventListener('keypress', function (e) {
@@ -28,7 +40,7 @@ function init () {
     if (window.update) {
       setInterval(() => {
         window.update()
-      })
+      }, time)
     }
 
     if (window.start) {

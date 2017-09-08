@@ -10,13 +10,13 @@ class Body {
 
   update () {
     this.velocity.add(this.aceleration)
-    this.positio.add(this.velocity)
+    this.position.add(this.velocity)
     this.aceleration.mult(0)
   }
 
-  addForce (aceleration) {
-    aceleration.mult(1 / this.size)
-    this.aceleration.add(aceleration)
+  addForce (force) {
+    force.mult(1 / this.size)
+    this.aceleration.add(force)
   }
 }
 

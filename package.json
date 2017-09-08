@@ -1,7 +1,6 @@
 {
-  "name": "lienzop",
-  "version": "0.3.0",
-  "description": "Produce universal library with webpack and es6",
+  "name": "lienzo",
+  "version": "0.0.1",
   "main": "lib/library.js",
   "scripts": {
     "build": "webpack --env build",
@@ -28,14 +27,7 @@
     "webpack": "3.1.0",
     "yargs": "7.1.0"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/krasimir/webpack-library-starter.git"
-  },
   "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/krasimir/webpack-library-starter/issues"
-  },
   "directories": {
     "lib": "lib",
     "test": "test"
